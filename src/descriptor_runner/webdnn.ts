@@ -308,8 +308,9 @@ export async function load(directory: string, initOption: InitOption = {}): Prom
 
     while (backendOrder.length > 0) {
         let backendName = backendOrder.shift()!;
-        backendOptions[backendName].transformUrlDelegate = customTransformUrlDelegate;
-        let runner: (DescriptorRunner | null) = await initBackend(backendName, backendOptions[backendName]);
+        let options = {...backendOptions[backendName]};
+        options.transformUrlDelegate = customTransformUrlDelegate;
+        let runner: (DescriptorRunner | null) = await initBackend(backendName, options);
         if (!runner) continue;
 
         try {
