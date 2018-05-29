@@ -33,7 +33,7 @@ export abstract class DescriptorRunner<D extends GraphDescriptor, P> {
             transformUrlDelegate = function(url){return url;}
         } = option;
         this.transformUrlDelegate = transformUrlDelegate;
-        console.log(this);
+        console.log("=========== Generating " + this);
     }
     /**
      * For Developer:
