@@ -295,8 +295,7 @@ export async function load(directory: string, initOption: InitOption = {}): Prom
     if (typeof backendOrder === 'string') backendOrder = [backendOrder];
     backendOrder = backendOrder.slice();
     if (backendOrder.indexOf('fallback') === -1) backendOrder.concat(['fallback']);
-
-    registerTransformUrlDelegate((url) => {
+    let customTransformUrlDelegate = (url) => {
         if (weightDirectory) {
             if ((/\.bin/).test(url)) {
                 url = url.replace(directory, weightDirectory);
@@ -304,10 +303,12 @@ export async function load(directory: string, initOption: InitOption = {}): Prom
         }
         if (transformUrlDelegate) url = transformUrlDelegate(url);
         return url;
-    });
+    };
+    registerTransformUrlDelegate(customTransformUrlDelegate);
 
     while (backendOrder.length > 0) {
         let backendName = backendOrder.shift()!;
+        backendOptions[backendName].transformUrlDelegate = customTransformUrlDelegate;
         let runner: (DescriptorRunner | null) = await initBackend(backendName, backendOptions[backendName]);
         if (!runner) continue;
 

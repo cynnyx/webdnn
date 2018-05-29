@@ -11,7 +11,7 @@ import { Allocation, ResolvedAllocation } from "../graph_descriptor/memory_layou
 import PlaceholderContext from "../placeholder";
 import SymbolicFloat32Array from "../symbolic_typed_array/symbolic_float32array";
 import { BackendName } from "../webdnn";
-import { DescriptorRunner } from "./descriptor_runner";
+import { DescriptorRunner, DescriptorRunnerOptions } from "./descriptor_runner";
 
 /**
  * @private
@@ -37,6 +37,10 @@ export default class DescriptorRunnerFallback extends DescriptorRunner<GraphDesc
         return true;
     }
 
+    constructor(options: DescriptorRunnerOptions = {}) {
+        super(options);
+    }
+
     async init(): Promise<void> {
         //nothing to do
     }
@@ -51,12 +55,12 @@ export default class DescriptorRunnerFallback extends DescriptorRunner<GraphDesc
 
     async fetchDescriptor(directory: string) {
         this.directory = directory;
-        let res = await webdnnFetch(`${directory}/graph_${this.backendName}.json`);
+        let res = await webdnnFetch(`${directory}/graph_${this.backendName}.json`, this.transformUrlDelegate);
         return res.json();
     }
 
     async fetchParameters(directory: string, progressCallback?: (loaded: number, total: number) => any) {
-        let res = await webdnnFetch(`${directory}/weight_${this.backendName}.bin`);
+        let res = await webdnnFetch(`${directory}/weight_${this.backendName}.bin`, this.transformUrlDelegate);
         return readArrayBufferProgressively(res, progressCallback);
     }
 

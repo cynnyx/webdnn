@@ -40,12 +40,14 @@ export function registerTransformUrlDelegate(delegate: (base: string) => string)
  * Fetch function. WebDNN API use this function instead of original `fetch` function.
  * FIXME
  * @param input Requested url
- * @param init Additional information about webdnnFetch
- * @param init.ignoreCache If true, cache is ignored by appending '?t=(timestamp)' to the end of request url.
+ * @param transformUrlDelegate url transform function
+ * @param init? Additional information about webdnnFetch
+ * @param init?.ignoreCache If true, cache is ignored by appending '?t=(timestamp)' to the end of request url.
  * @returns Response
  * @protected
  */
-export default async function webdnnFetch(input: RequestInfo, init?: WebDNNRequestInit) {
+export default async function webdnnFetch(input: RequestInfo, transformUrlDelegate: (base: string) => string, init?: WebDNNRequestInit) {
+    let transformUrl = transformUrlDelegate || function(url: string){ return url};
     if (typeof input == 'string') {
         input = transformUrl(input) + ((init && init.ignoreCache) ? '?t=' + Date.now() : '');
     } else {
